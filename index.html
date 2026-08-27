@@ -240,7 +240,7 @@ h1 .hl > span:not(.emphasis){text-shadow:0 2px 28px rgba(7,20,39,.5)}
 /* ---------- Josh, in the scene ---------- */
 .wallwrap{position:absolute;inset:0;will-change:transform,opacity}
 .hero-josh{
-  position:absolute;right:3vw;bottom:0;z-index:4;
+  position:absolute;right:3vw;bottom:7vh;z-index:4;
   height:min(66vh,620px);aspect-ratio:546/626;
   pointer-events:none;
 }
@@ -733,7 +733,8 @@ footer{background:var(--navy-deep);color:#fff;position:relative;overflow:hidden;
     </svg>
   </a>
   <div class="nav-links">
-    <a href="#why">Why Franchising</a>
+    <a href="#top">Home</a>
+    <a href="#why">Opportunities</a>
     <a href="#process">The Process</a>
     <a href="#media">Podcast</a>
     <a href="#about">About Josh</a>
@@ -744,7 +745,8 @@ footer{background:var(--navy-deep);color:#fff;position:relative;overflow:hidden;
   </button>
 </nav>
 <div class="mobile-menu" id="mobileMenu">
-  <a href="#why">Why Franchising</a>
+  <a href="#top">Home</a>
+  <a href="#why">Opportunities</a>
   <a href="#process">The Process</a>
   <a href="#media">Podcast</a>
   <a href="#about">About Josh</a>
@@ -1338,12 +1340,13 @@ function navTheme(){
 ScrollTrigger.create({ onUpdate: navTheme });
 navTheme();
 
-var spyLinks = document.querySelectorAll('.nav-links a');
 var spyIds = ['why','process','media','about'];
-spyIds.forEach(function(id, i){
+spyIds.forEach(function(id){
+  var link = document.querySelector('.nav-links a[href="#'+id+'"]');
+  if (!link) return;
   ScrollTrigger.create({
     trigger:'#'+id, start:'top 45%', end:'bottom 45%',
-    onToggle:function(self){ spyLinks[i].classList.toggle('active', self.isActive); }
+    onToggle:function(self){ link.classList.toggle('active', self.isActive); }
   });
 });
 
