@@ -182,6 +182,8 @@ a{color:inherit}
 .wall-col.down{animation-name:wallDown}
 #heroWall .wall-col:nth-child(1){opacity:.4}
 #heroWall .wall-col:nth-child(2){opacity:.6}
+#legacyWall{inset:-26% -32%}
+#legacyWall .wall-col{flex-basis:clamp(190px,16vw,260px)}
 @keyframes wallUp{from{transform:translateY(0)}to{transform:translateY(-50%)}}
 @keyframes wallDown{from{transform:translateY(-50%)}to{transform:translateY(0)}}
 .wcard{
@@ -235,6 +237,34 @@ h1 .hl > span:not(.emphasis){text-shadow:0 2px 28px rgba(7,20,39,.5)}
 .scene .scrim{
   position:absolute;inset:0;pointer-events:none;background:var(--night);
 }
+/* ---------- Josh, in the scene ---------- */
+.wallwrap{position:absolute;inset:0;will-change:transform,opacity}
+.hero-josh{
+  position:absolute;right:3vw;bottom:0;z-index:4;
+  height:min(66vh,620px);aspect-ratio:546/626;
+  pointer-events:none;
+}
+.hj-inner{position:absolute;inset:0}
+.hero-josh::before{
+  content:"";position:absolute;inset:-12% -18% 0;
+  background:radial-gradient(60% 55% at 50% 62%,rgba(7,20,39,.72) 0%,rgba(7,20,39,.3) 55%,transparent 78%);
+}
+.hero-josh img{
+  position:relative;width:100%;height:100%;object-fit:contain;object-position:bottom;
+  filter:drop-shadow(0 30px 50px rgba(3,8,18,.65)) saturate(.96);
+  -webkit-mask-image:linear-gradient(180deg,#000 86%,transparent 100%);
+  mask-image:linear-gradient(180deg,#000 86%,transparent 100%);
+}
+.hj-chip{
+  position:absolute;left:50%;bottom:34px;transform:translateX(-50%);
+  display:inline-flex;align-items:center;gap:8px;white-space:nowrap;
+  font-family:var(--fm);font-size:10px;letter-spacing:.18em;text-transform:uppercase;
+  color:rgba(255,255,255,.85);background:rgba(7,20,39,.6);backdrop-filter:blur(8px);
+  border:1px solid rgba(255,255,255,.16);border-radius:8px;padding:9px 13px;
+}
+.hj-chip .tick{width:7px;height:7px;background:var(--orange);flex:none}
+@media(max-width:1100px){.hero-josh{height:min(56vh,520px);right:1vw}}
+@media(max-width:860px){.hero-josh{display:none}}
 .hero-copy{
   position:absolute;inset:0;display:flex;align-items:center;z-index:5;
 }
@@ -726,8 +756,14 @@ footer{background:var(--navy-deep);color:#fff;position:relative;overflow:hidden;
 
   <!-- Scene 1: hero — the portfolio wall: real businesses, drifting -->
   <section class="scene" id="heroScene" aria-label="Introduction">
-    <div class="wall" id="heroWall" aria-hidden="true"></div>
+    <div class="wallwrap" id="heroWallW"><div class="wall" id="heroWall" aria-hidden="true"></div></div>
     <div class="vignette" aria-hidden="true"></div>
+    <div class="hero-josh" id="heroJosh">
+      <div class="hj-inner">
+        <img src="assets/josh.png" alt="Josh DuBois, founder of JD Strategic Franchising">
+        <span class="hj-chip"><span class="tick"></span>Josh DuBois · Your Franchise Coach</span>
+      </div>
+    </div>
     <div class="hero-copy">
       <div class="wrap">
         <div class="hero-inner" id="heroInner">
@@ -1141,7 +1177,7 @@ function buildWall(el, cols, speedBase, offset){
   el.innerHTML = html;
 }
 buildWall(document.getElementById('heroWall'),   5, 58, 0);
-buildWall(document.getElementById('legacyWall'), 6, 66, 3);
+buildWall(document.getElementById('legacyWall'), 9, 66, 3);
 buildWall(document.getElementById('finaleWall'), 5, 74, 7);
 
 /* ============================================================
@@ -1161,6 +1197,8 @@ var heroTl = gsap.timeline({ defaults:{ ease:'power4.out' } });
 if (!prefersReduced){
   heroTl
     .from('#heroWall', { opacity:0, scale:1.24, duration:1.7, ease:'power2.out' }, 0)
+    .from('.hj-inner', { x:70, opacity:0, duration:1.3, ease:'power3.out' }, .55)
+    .from('.hj-chip', { y:14, opacity:0, duration:.8 }, 1.1)
     .from('#heroInner .eyebrow', { y:24, opacity:0, duration:.8 }, .15)
     .from('.hl > span', { yPercent:120, duration:1.1, stagger:.14 }, .25)
     .from('.hero-lead', { y:28, opacity:0, duration:.9 }, .7)
@@ -1181,7 +1219,8 @@ if (!prefersReduced){
     scrollTrigger: { trigger:'#heroScene', start:'top top', end:'+=85%', scrub:true, pin:true }
   })
   .to('#heroInner', { yPercent:-18, opacity:0, filter:'blur(10px)', ease:'none' }, 0)
-  .to('#heroWall', { scale:1.36, opacity:0.3, ease:'none' }, 0)
+  .fromTo('#heroWallW', { scale:1, opacity:1 }, { scale:1.19, opacity:0.3, ease:'none', immediateRender:false }, 0)
+  .fromTo('.hero-josh', { yPercent:0, opacity:1 }, { yPercent:8, opacity:0, ease:'none', immediateRender:false }, 0)
   .to('.hero-scroll-hint, .hero-badge', { opacity:0, ease:'none' }, 0);
 }
 
@@ -1193,13 +1232,13 @@ function fmt(n){ return Math.round(n).toLocaleString('en-US'); }
 
 if (!prefersReduced){
   gsap.set('#legacyScrim', { opacity:0.7 });
-  gsap.set('#legacyWall', Object.assign({ scale:2.15, rotation:-3, rotateX:7 }, { transformPerspective:1500, transformOrigin:'50% 46%' }));
+  gsap.set('#legacyWall', Object.assign({ scale:2.7, rotation:-3, rotateX:7 }, { transformPerspective:1500, transformOrigin:'50% 46%' }));
   var legacyTl = gsap.timeline({
     scrollTrigger: { trigger:'#legacyScene', start:'top top', end:'+=260%', scrub:true, pin:true }
   });
-  // the camera pulls back: one business becomes a field of them as the count climbs
-  legacyTl.to('#legacyWall', { scale:0.92, rotation:-5, rotateX:11, duration:1, ease:'none' }, 0);
-  legacyTl.to('#legacyScrim', { opacity:0.18, duration:1, ease:'power1.in' }, 0);
+  // the camera pulls back hard and early: one business becomes a field of hundreds
+  legacyTl.to('#legacyWall', { scale:0.66, rotation:-5, rotateX:11, duration:0.62, ease:'power1.out' }, 0);
+  legacyTl.to('#legacyScrim', { opacity:0.2, duration:0.62, ease:'power1.in' }, 0);
   // counter: 10 -> 2400 across the whole scene, eased so the end accelerates
   legacyTl.to(counter, { v:2400, duration:1, ease:'power2.in',
     onUpdate:function(){ lcNum.textContent = fmt(counter.v); } }, 0);
